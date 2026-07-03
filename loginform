@@ -1,0 +1,184 @@
+from PyQt5.QtWidgets import QWidget, QMessageBox
+from PyQt5.QtCore import QTimer
+from junubi import Ui_junubilogin_Form
+
+
+class LoginPage(QWidget):
+    def __init__(self, stack, main):
+        super().__init__()
+        self.stack = stack
+        self.main = main
+
+        self.ui = Ui_junubilogin_Form()
+        self.ui.setupUi(self)
+
+        # ---------------- SIGNALS ----------------
+        self.ui.login_pushButton.clicked.connect(self.login)
+        self.ui.loginclear_pushButton.clicked.connect(self.clear)
+
+        self.ui.position_comboBox.addItems(["ADMIN","BURSAR","TEACHER"])
+
+        # Press Enter to login
+        self.ui.loginpassword_lineEdit.returnPressed.connect(self.login)
+
+        # ---------------- STYLE ----------------
+        self.setStyleSheet("""
+            QLineEdit {
+                padding: 6px;
+                border: 1px solid gray;
+                border-radius: 5px;
+            }
+            QPushButton {
+                background-color: blue;
+                border: 1px solid gray;
+                padding: 8px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+                color: white;
+            }
+        """)
+
+    # ---------------- LOGIN FUNCTION ----------------
+    def login(self):
+        username = self.ui.loginname_lineEdit.text().strip()
+        position = self.ui.position_comboBox.currentText()
+        password = self.ui.loginpassword_lineEdit.text().strip()
+
+        self.stack.setCurrentIndex(1)  # Go to dashboard
+        self.main.enable_navigation()
+
+         # Highlight dashboard
+        self.main.highlighted_sidebar_index = 0
+        self.main.update_sidebar_highlight()
+
+        # DELAY LOADING
+        QTimer.singleShot(200, self.refresh_pages)
+
+        self.clear()
+
+
+    # REFRESH DATA PAGES
+    def refresh_pages(self):
+        try:
+            self.main.dashboard.load_statistics()
+            self.main.results.load_data()
+            self.main.fees.load_data()
+
+        except Exception as e:
+            print("Refresh error:", e)
+
+
+    # ---------------- CLEAR FUNCTION ----------------
+    def clear(self):
+        self.ui.loginname_lineEdit.clear()
+        self.ui.loginpassword_lineEdit.clear()
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_junubilogin_Form(object):
+    def setupUi(self, junubilogin_Form):
+        junubilogin_Form.setObjectName("junubilogin_Form")
+        junubilogin_Form.resize(618, 476)
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        junubilogin_Form.setFont(font)
+        self.gridLayout = QtWidgets.QGridLayout(junubilogin_Form)
+        self.gridLayout.setObjectName("gridLayout")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.label_5 = QtWidgets.QLabel(junubilogin_Form)
+        self.label_5.setText("")
+        self.label_5.setPixmap(QtGui.QPixmap("../../Downloads/—Pngtree—school logo_3754856.png"))
+        pixmap = QtGui.QPixmap("../../Downloads/—Pngtree—school logo_3754856.png")
+        pixmap = pixmap.scaled(
+            100, 100,
+            QtCore.Qt.KeepAspectRatio,
+            QtCore.Qt.SmoothTransformation
+        )
+        self.label_5.setPixmap(pixmap)
+        self.label_5.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_5.setOpenExternalLinks(False)
+        self.label_5.setObjectName("label_5")
+        self.label_5.setFixedSize(200, 200)
+        self.label_5.setAlignment(QtCore.Qt.AlignCenter)
+        self.verticalLayout.addWidget(
+            self.label_5,
+            alignment=QtCore.Qt.AlignHCenter
+        )
+        self.verticalLayout.addStretch()
+
+        self.verticalLayout.addWidget(
+            self.label_5,
+            alignment=QtCore.Qt.AlignCenter
+        )
+
+        self.verticalLayout.addStretch()
+        self.label_4 = QtWidgets.QLabel(junubilogin_Form)
+        self.label_4.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_4.setObjectName("label_4")
+        self.verticalLayout.addWidget(self.label_4)
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 2)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.label_2 = QtWidgets.QLabel(junubilogin_Form)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
+        self.verticalLayout_2.addWidget(self.label_2)
+        self.label_3 = QtWidgets.QLabel(junubilogin_Form)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.label_3.setFont(font)
+        self.label_3.setObjectName("label_3")
+        self.verticalLayout_2.addWidget(self.label_3)
+        self.label = QtWidgets.QLabel(junubilogin_Form)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.verticalLayout_2.addWidget(self.label)
+        self.gridLayout.addLayout(self.verticalLayout_2, 1, 0, 3, 1)
+        self.loginname_lineEdit = QtWidgets.QLineEdit(junubilogin_Form)
+        self.loginname_lineEdit.setObjectName("loginname_lineEdit")
+        self.gridLayout.addWidget(self.loginname_lineEdit, 1, 1, 1, 1)
+        self.loginpassword_lineEdit = QtWidgets.QLineEdit(junubilogin_Form)
+        self.loginpassword_lineEdit.setObjectName("loginpassword_lineEdit")
+        self.gridLayout.addWidget(self.loginpassword_lineEdit, 2, 1, 1, 1)
+        self.position_comboBox = QtWidgets.QComboBox(junubilogin_Form)
+        self.position_comboBox.setObjectName("position_comboBox")
+        self.gridLayout.addWidget(self.position_comboBox, 3, 1, 1, 1)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.loginclear_pushButton = QtWidgets.QPushButton(junubilogin_Form)
+        self.loginclear_pushButton.setObjectName("loginclear_pushButton")
+        self.horizontalLayout.addWidget(self.loginclear_pushButton)
+        self.login_pushButton = QtWidgets.QPushButton(junubilogin_Form)
+        self.login_pushButton.setObjectName("login_pushButton")
+        self.horizontalLayout.addWidget(self.login_pushButton)
+        self.gridLayout.addLayout(self.horizontalLayout, 4, 0, 1, 2)
+
+        self.retranslateUi(junubilogin_Form)
+        QtCore.QMetaObject.connectSlotsByName(junubilogin_Form)
+
+    def retranslateUi(self, junubilogin_Form):
+        _translate = QtCore.QCoreApplication.translate
+        junubilogin_Form.setWindowTitle(_translate("junubilogin_Form", "LOGIN FORM"))
+        self.label_4.setText(_translate("junubilogin_Form", "ADMINISTRATION LOGIN FORM"))
+        self.label_2.setText(_translate("junubilogin_Form", "NAME"))
+        self.label_3.setText(_translate("junubilogin_Form", "PASSWORD"))
+        self.label.setText(_translate("junubilogin_Form", "POSITION"))
+        self.loginclear_pushButton.setText(_translate("junubilogin_Form", "CLEAR"))
+        self.login_pushButton.setText(_translate("junubilogin_Form", "LOGIN"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    junubilogin_Form = QtWidgets.QWidget()
+    ui = Ui_junubilogin_Form()
+    ui.setupUi(junubilogin_Form)
+    junubilogin_Form.show()
+    sys.exit(app.exec_())
